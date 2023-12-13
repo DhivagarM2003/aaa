@@ -1,0 +1,186 @@
+#include <stdio.h>
+#include <stdlib.h>
+struct Node {
+        int data;
+        struct Node* next;
+};
+struct Node* createNode(int data) {
+        struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+        if (newNode == NULL) {
+                printf("Memory allocation failed!\n");
+                exit(1);
+        }
+        newNode->data = data;
+        newNode->next = NULL;
+        return newNode;
+}
+void insertAtBeginning(struct Node** head, int data) {
+        struct Node* newNode = createNode(data);
+        if (*head == NULL) {
+                newNode->next = newNode;
+                *head = newNode;
+        } else {
+                struct Node* current = *head;
+                while (current->next != *head) {
+                        current = current->next;
+                }
+                newNode->next = *head;
+                current->next = newNode;
+                *head = newNode;
+        }
+}
+void insertAtEnd(struct Node** head, int data) {
+        struct Node* newNode = createNode(data);
+        if (*head == NULL) {
+                newNode->next = newNode;
+                *head = newNode;
+        } else {
+                struct Node* current = *head;
+                while (current->next != *head) {
+                        current = current->next;
+                }
+                newNode->next = *head;
+                current->next = newNode;
+        }
+}
+void insertBeforeElement(struct Node** head, int data, int key) {
+        struct Node* newNode = createNode(data);
+        if (*head == NULL) {
+                printf("List is empty, cannot insert before element %d\n", key);
+                return;
+        }
+        struct Node* current = *head;
+        struct Node* prev = NULL;
+        do {
+                if (current->data == key) {
+                        newNode->next = current;
+                        if (prev != NULL) {
+                                prev->next = newNode;
+                        } else {
+                                struct Node* last = *head;
+                                while (last->next != *head) {
+                                        last = last->next;
+                                }
+                                last->next = newNode;
+                                *head = newNode;
+                        }
+                        return;
+                }
+                prev = current;
+                current = current->next;
+        } while (current != *head);
+        printf("Element %d not found in the list.\n", key);
+        free(newNode);
+}
+void insertAfterElement(struct Node** head, int data, int key) {
+        struct Node* newNode = createNode(data);
+        if (*head == NULL) {
+                printf("List is empty, cannot insert after element %d\n", key);
+                return;
+        }
+        struct Node* current = *head;
+        do {
+                if (current->data == key) {
+                        newNode->next = current->next;
+                        current->next = newNode;
+                        return;
+                }
+                current = current->next;
+        } while (current != *head);
+        printf("Element %d not found in the list.\n", key);
+        free(newNode);
+}
+void deleteNode(struct Node** head, int key) {
+        if (*head == NULL) {
+                printf("List is empty, cannot delete element %d\n", key);
+                return;
+        }
+        struct Node* current = *head;
+        struct Node* prev = NULL;
+        do {
+                if (current->data == key) {
+                        if (prev != NULL) {
+                                prev->next = current->next;
+                                if (current == *head) {
+                                        *head = current->next;
+                                }
+                        } else {
+                                struct Node* last = *head;
+                                while (last->next != *head) {
+                                        last = last->next;
+                                }
+                                last->next = current->next;
+                                *head = current->next;
+                        }
+                        free(current);
+                        return;
+                }
+                prev = current;
+                current = current->next;
+        } while (current != *head);
+        printf("Element %d not found in the list.\n", key);
+}
+void printList(struct Node* head) {
+        if (head == NULL) {
+                printf("List is empty.\n");
+                return;
+        }
+        struct Node* current = head;
+        do {
+                printf("%d -> ", current->data);
+                current = current->next;
+        } while (current != head);
+        printf("%d (Head)\n", head->data);
+}
+int main() {
+        int ch,n,n1;
+        struct Node* head = NULL;
+        printf("\n1.addstart\t2.addend\t3.addbefore\t4.addafter\t5.delete\t6.display");
+start:{
+              printf("\nEnter your choice:");
+              scanf("%d",&ch);
+              if(ch==1)
+              {
+                      printf("Enter element to be added:");
+                      scanf("%d",&n);
+                      insertAtBeginning(&head,n);
+              }
+              else if(ch==2)
+              {
+                      printf("Enter element to be added:");
+                      scanf("%d",&n);
+                      insertAtEnd(&head,n);
+              }
+              else if(ch==3)
+              {
+                      printf("Enter element to be added and the element before which it has to be added:");
+                      scanf("%d %d",&n,&n1);
+                      insertBeforeElement(&head,n,n1);
+              }
+              else if(ch==4)
+              {
+                      printf("Enter element to be added and the element after which it has to be added:");
+                      scanf("%d %d",&n,&n1);
+                      insertBeforeElement(&head,n,n1);
+              }
+              else if(ch==5)
+              {
+                      printf("Enter element to be deleted:");
+                      scanf("%d",&n);
+                      deleteNode(&head,n);
+              }
+              else if(ch==6)
+              {
+                      printList(head);
+              }
+              goto start;
+      }
+      struct Node* current = head;
+      while (current->next != head) {
+              struct Node* temp = current;
+              current = current->next;
+              free(temp);
+      }
+      free(current);
+      return 0;
+}
